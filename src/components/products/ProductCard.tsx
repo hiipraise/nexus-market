@@ -48,7 +48,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <Link href={`/products/${product.slug}`} className="card-product block">
+      <Link href={`/products/${product.slug}`} className="card-product group block">
         {/* Image */}
         <div className="relative aspect-[4/5] overflow-hidden bg-white/5">
           {primaryImage ? (
