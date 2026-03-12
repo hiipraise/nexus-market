@@ -3,16 +3,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/lib/db/connect'
 import { Ad } from '@/models'
 
+type Params = { params: Promise<{ id: string }> }
+
 export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    await connectDB()
-    await Ad.findByIdAndUpdate(params.id, { $inc: { clicks: 1 } })
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error(error)
-    return NextResponse.json({ success: false }, { status: 500 })
-  }
+  const { id } = await params
+
+  await connectDB()
+  await Ad.findByIdAndUpdate(id, { $inc: { clicks: 1 } })
+
+  return NextResponse.json({ success: true })
 }
