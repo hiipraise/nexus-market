@@ -1,3 +1,4 @@
+// src/app/dashboard/admin/page.tsx
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
@@ -6,7 +7,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
   RiUserLine, RiStore2Line, RiShoppingBagLine, RiMoneyDollarCircleLine,
-  RiAlertLine, RiBullhornLine, RiShieldLine, RiArrowRightLine,
+  RiAlertLine, RiMegaphoneLine, RiShieldLine, RiArrowRightLine,
 } from 'react-icons/ri'
 import { formatCurrency } from '@/lib/utils'
 
@@ -28,7 +29,7 @@ export default function AdminDashboardPage() {
   const quickActions = [
     { href: '/dashboard/admin/vendors?status=pending', icon: RiShieldLine,     label: 'Approve Vendors',    color: 'text-yellow-400' },
     { href: '/dashboard/admin/reports',                icon: RiAlertLine,      label: 'Review Reports',     color: 'text-red-400'    },
-    { href: '/dashboard/admin/announcements/new',      icon: RiBullhornLine,   label: 'Post Announcement',  color: 'text-gold-400'   },
+    { href: '/dashboard/admin/announcements/new',      icon: RiMegaphoneLine,   label: 'Post Announcement',  color: 'text-gold-400'   },
     { href: '/dashboard/admin/moderation',             icon: RiShieldLine,     label: 'Moderation Queue',   color: 'text-purple-400' },
   ]
 

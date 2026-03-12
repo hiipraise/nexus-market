@@ -1,3 +1,4 @@
+// src/components/layout/Footer.tsx
 import Link from 'next/link'
 import { RiInstagramLine, RiTwitterXLine, RiFacebookLine, RiWhatsappLine } from 'react-icons/ri'
 import { appConfig } from '@/config'

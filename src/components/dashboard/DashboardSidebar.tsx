@@ -1,3 +1,4 @@
+// src/components/dashboard/DashboardSidebar.tsx
 'use client'
 
 import Link from 'next/link'
@@ -6,8 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   RiDashboardLine, RiStore2Line, RiShoppingBagLine, RiBarChart2Line,
   RiMegaphoneLine, RiPercentLine, RiMoneyDollarCircleLine, RiSettings3Line,
-  RiMessage2Line, RiShieldCheckLine, RiUserLine, RiAlertLine,
-  RiBullhornLine, RiGroup2Line, RiHeartLine, RiLogoutBoxLine,
+  RiMessage2Line, RiShieldCheckLine, RiUserLine, RiAlertLine, RiGroup2Line, RiHeartLine, RiLogoutBoxLine,
   RiArrowLeftLine, RiArrowRightLine,
 } from 'react-icons/ri'
 import { signOut } from 'next-auth/react'
@@ -47,7 +47,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { href: '/dashboard/admin/products',      label: 'Products',      icon: RiShoppingBagLine},
     { href: '/dashboard/admin/reports',       label: 'Reports',       icon: RiAlertLine      },
     { href: '/dashboard/admin/moderation',    label: 'Moderation',    icon: RiShieldCheckLine},
-    { href: '/dashboard/admin/announcements', label: 'Announcements', icon: RiBullhornLine   },
+    { href: '/dashboard/admin/announcements', label: 'Announcements', icon: RiMegaphoneLine   },
     { href: '/dashboard/admin/analytics',     label: 'Analytics',     icon: RiBarChart2Line  },
     { href: '/dashboard/admin/settings',      label: 'Settings',      icon: RiSettings3Line  },
   ],
@@ -58,7 +58,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { href: '/dashboard/admin/products',      label: 'Products',      icon: RiShoppingBagLine},
     { href: '/dashboard/admin/reports',       label: 'Reports',       icon: RiAlertLine      },
     { href: '/dashboard/admin/moderation',    label: 'Moderation',    icon: RiShieldCheckLine},
-    { href: '/dashboard/admin/announcements', label: 'Announcements', icon: RiBullhornLine   },
+    { href: '/dashboard/admin/announcements', label: 'Announcements', icon: RiMegaphoneLine   },
     { href: '/dashboard/admin/analytics',     label: 'Analytics',     icon: RiBarChart2Line  },
     { href: '/dashboard/admin/settings',      label: 'Settings',      icon: RiSettings3Line  },
   ],

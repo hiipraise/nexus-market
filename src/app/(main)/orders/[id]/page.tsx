@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
   RiCheckLine, RiLoader4Line, RiTruckLine,
-  RiHomeLine, RiPackageLine, RiArrowRightLine,
+  RiHomeLine, RiArchiveLine, RiArrowRightLine,
 } from 'react-icons/ri'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
@@ -15,7 +15,7 @@ import { StatusBadge, LoadingSpinner, Modal } from '@/components/shared'
 import { useState } from 'react'
 
 const TRACK_STEPS = [
-  { status: 'processing',        icon: RiPackageLine,  label: 'Order Placed'     },
+  { status: 'processing',        icon: RiArchiveLine,  label: 'Order Placed'     },
   { status: 'payment_confirmed', icon: RiCheckLine,    label: 'Payment Confirmed'},
   { status: 'shipped',           icon: RiTruckLine,    label: 'Shipped'          },
   { status: 'out_for_delivery',  icon: RiLoader4Line,  label: 'Out for Delivery' },

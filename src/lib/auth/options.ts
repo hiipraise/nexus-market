@@ -1,3 +1,4 @@
+// src/lib/auth/options.ts
 import NextAuth, { type NextAuthOptions, type Session, type User as NextAuthUser } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
@@ -37,17 +38,17 @@ export const authOptions: NextAuthOptions = {
   secret: authConfig.secret,
   session: {
     strategy: 'jwt',
-    maxAge:   authConfig.sessionAge,
+    maxAge: authConfig.sessionAge,
   },
   pages: {
-    signIn:  '/login',
-    error:   '/login',
+    signIn: '/login',
+    error: '/login',
   },
   providers: [
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        username: { label: 'Username', type: 'text'     },
+        username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -57,9 +58,9 @@ export const authOptions: NextAuthOptions = {
 
         const user = await UserModel
           .findOne({
-            username:  credentials.username.toLowerCase().trim(),
+            username: credentials.username.toLowerCase().trim(),
             isDeleted: false,
-            isActive:  true,
+            isActive: true,
           })
           .select('+passwordHash')
           .lean()
@@ -70,11 +71,11 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) return null
 
         return {
-          id:       String(user._id),
+          id: String(user._id),
           username: user.username,
-          email:    user.email,
-          role:     user.role,
-          image:    user.profile?.avatarUrl,
+          email: user.email,
+          role: user.role,
+          image: user.profile?.avatarUrl,
         }
       },
     }),
@@ -82,20 +83,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id       = user.id
+        token.id = user.id
         token.username = user.username
-        token.role     = user.role
+        token.role = user.role
       }
       return token
     },
     async session({ session, token }) {
-      session.user.id       = token.id
+      session.user.id = token.id
       session.user.username = token.username
-      session.user.role     = token.role
+      session.user.role = token.role
       return session
     },
   },
 }
-
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }
