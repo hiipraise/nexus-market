@@ -24,7 +24,9 @@ const VendorRegisterSchema = z.object({
   whatsapp:         z.string().optional(),
   businessName:     z.string().min(2, 'Business name required'),
   description:      z.string().min(20, 'At least 20 characters describing your business'),
-  secretQuestion:   z.enum(secretQuestions as [string, ...string[]], { required_error: 'Choose a question' }),
+  secretQuestion: z.enum([...secretQuestions], {
+  required_error: 'Choose a question',
+}),
   secretAnswer:     z.string().min(1, 'Answer required'),
 })
 type VendorRegisterForm = z.infer<typeof VendorRegisterSchema>
