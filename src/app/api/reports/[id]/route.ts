@@ -3,18 +3,26 @@ import { connectDB } from '@/lib/db/connect'
 import { Report } from '@/models'
 import { requireAuth } from '@/lib/auth/helpers'
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 export async function GET(_: NextRequest, { params }: Params) {
   try {
+    const { id } = await params
+
     const { error } = await requireAuth(['admin', 'superadmin', 'support'])
     if (error) return error
+
     await connectDB()
-    const report = await Report.findById(params.id)
-      .populate('reportedBy',    'username')
-      .populate('resolvedBy',    'username')
+
+    const report = await Report.findById(id)
+      .populate('reportedBy', 'username')
+      .populate('resolvedBy', 'username')
       .lean()
-    if (!report) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 })
+
+    if (!report) {
+      return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 })
+    }
+
     return NextResponse.json({ success: true, data: report })
   } catch {
     return NextResponse.json({ success: false }, { status: 500 })
@@ -23,12 +31,17 @@ export async function GET(_: NextRequest, { params }: Params) {
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   try {
+    const { id } = await params
+
     const { session, error } = await requireAuth(['admin', 'superadmin', 'support'])
     if (error) return error
+
     const { status, notes } = await req.json()
+
     await connectDB()
+
     const report = await Report.findByIdAndUpdate(
-      params.id,
+      id,
       {
         status,
         ...(notes ? { adminNotes: notes } : {}),
@@ -38,6 +51,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       },
       { new: true }
     ).lean()
+
     return NextResponse.json({ success: true, data: report })
   } catch {
     return NextResponse.json({ success: false }, { status: 500 })
