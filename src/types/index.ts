@@ -133,6 +133,7 @@ export interface ICategory {
   parent?:     Types.ObjectId | string
   isActive:    boolean
   isDeleted:   boolean
+  deletedAt?:  Date
   createdAt:   Date
   updatedAt:   Date
 }
@@ -251,6 +252,11 @@ export interface ICartItem {
   productId: Types.ObjectId | string
   size:      string
   quantity:  number
+  name?:         string
+  imageUrl?:     string
+  vendorName?:   string
+  basePrice?:    number
+  discountPrice?: number
 }
 
 export interface ICart {
@@ -260,6 +266,7 @@ export interface ICart {
   items:    ICartItem[]
   expiresAt?: Date
   isDeleted:  boolean
+  deletedAt?: Date
   createdAt:  Date
   updatedAt:  Date
 }
@@ -316,6 +323,7 @@ export interface IAd {
   clicks:     number
   impressions: number
   isDeleted:  boolean
+  deletedAt?: Date
   createdAt:  Date
   updatedAt:  Date
 }
@@ -335,6 +343,7 @@ export interface IDiscount {
   startsAt:   Date
   endsAt:     Date
   isDeleted:  boolean
+  deletedAt?: Date
   createdAt:  Date
   updatedAt:  Date
 }
@@ -392,6 +401,7 @@ export interface IPayout {
   processedBy?:  Types.ObjectId | string
   notes?:        string
   isDeleted:     boolean
+  deletedAt?:    Date
   createdAt:     Date
   updatedAt:     Date
 }
@@ -408,6 +418,7 @@ export interface IAnnouncement {
   expiresAt?:  Date
   createdBy:   Types.ObjectId | string
   isDeleted:   boolean
+  deletedAt?:  Date
   createdAt:   Date
   updatedAt:   Date
 }

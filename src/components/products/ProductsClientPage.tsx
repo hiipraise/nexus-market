@@ -7,7 +7,7 @@ import {
   RiFilterLine, RiCloseLine, RiGridLine, RiListCheck2,
   RiArrowUpDownLine,
 } from 'react-icons/ri'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import axios from 'axios'
 import ProductCard from './ProductCard'
 import { buildQueryString } from '@/lib/utils'
@@ -21,6 +21,22 @@ const SORT_OPTIONS = [
   { value: 'trending',   label: 'Trending'     },
   { value: 'rating',     label: 'Top Rated'    },
 ]
+
+
+interface ProductsResponse {
+  data: unknown[]
+  meta?: {
+    total: number
+    totalPages?: number
+    page?: number
+    limit?: number
+  }
+}
+
+interface CategoryOption {
+  _id: string
+  name: string
+}
 
 export default function ProductsClientPage() {
   const router       = useRouter()
@@ -51,13 +67,13 @@ export default function ProductsClientPage() {
     limit: 24,
   })
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<ProductsResponse>({
     queryKey: ['products', queryParams],
     queryFn:  () => axios.get(`/api/products?${queryParams}`).then(r => r.data),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   })
 
-  const { data: categoriesData } = useQuery({
+  const { data: categoriesData } = useQuery<CategoryOption[]>({
     queryKey: ['categories'],
     queryFn:  () => axios.get('/api/categories').then(r => r.data.data),
     staleTime: 5 * 60 * 1000,
@@ -81,6 +97,7 @@ export default function ProductsClientPage() {
 
   const products = data?.data ?? []
   const meta     = data?.meta
+  const totalPages = meta?.totalPages ?? 1
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -170,7 +187,7 @@ export default function ProductsClientPage() {
                   <div>
                     <h4 className="text-sm font-medium text-gray-400 mb-3">Category</h4>
                     <div className="space-y-2">
-                      {categoriesData.map((cat: any) => (
+                      {categoriesData.map((cat) => (
                         <label key={cat._id} className="flex items-center gap-2 cursor-pointer group">
                           <input
                             type="radio"
@@ -259,7 +276,7 @@ export default function ProductsClientPage() {
                   ))}
                 </div>
                 {/* Pagination */}
-                {meta && meta.totalPages > 1 && (
+                {meta && totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-10">
                     <button
                       onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -269,11 +286,11 @@ export default function ProductsClientPage() {
                       Previous
                     </button>
                     <span className="text-gray-400 text-sm px-4">
-                      {page} / {meta.totalPages}
+                      {page} / {totalPages}
                     </span>
                     <button
-                      onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))}
-                      disabled={page >= meta.totalPages}
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page >= totalPages}
                       className="btn-secondary text-sm px-4 py-2 disabled:opacity-40"
                     >
                       Next

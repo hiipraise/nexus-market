@@ -119,7 +119,7 @@ export default function VendorDashboardClient() {
                   <YAxis hide />
                   <Tooltip
                     contentStyle={{ background: '#1a0a2e', border: '1px solid rgba(200,139,0,0.2)', borderRadius: 12, color: '#f0e8d6' }}
-                    formatter={(v: number) => [formatCurrency(v), 'Revenue']}
+                    formatter={(value) => [formatCurrency(Number(value ?? 0)), 'Revenue']}
                   />
                   <Line type="monotone" dataKey="revenue" stroke="#c88b00" strokeWidth={2} dot={false} />
                 </LineChart>
