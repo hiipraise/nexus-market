@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/shared'
 
 export default function CartPage() {
   const { items, removeItem, updateQty, totalItems, clearCart } = useCartStore()
+  const cartItemCount = totalItems()
 
   const subtotal = items.reduce(
     (sum, item) => sum + (item.discountPrice ?? item.basePrice ?? 0) * item.quantity,
@@ -35,7 +36,7 @@ export default function CartPage() {
     <div className="min-h-screen pt-28 pb-16">
       <div className="page-container">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="section-title">Your Cart ({totalItems})</h1>
+          <h1 className="section-title">Your Cart ({cartItemCount})</h1>
           <button onClick={clearCart} className="text-red-400 hover:text-red-300 text-sm flex items-center gap-1 transition-colors">
             <RiDeleteBin2Line className="w-4 h-4" /> Clear cart
           </button>
@@ -75,12 +76,12 @@ export default function CartPage() {
                     {/* Qty control */}
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => item.quantity > 1 ? updateQty(item.productId, item.size, item.quantity - 1) : removeItem(item.productId, item.size)}
+                        onClick={() => item.quantity > 1 ? updateQty(String(item.productId), item.size, item.quantity - 1) : removeItem(String(item.productId), item.size)}
                         className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 text-lg font-bold transition-all"
                       >−</button>
                       <span className="font-mono text-gray-200 w-6 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => updateQty(item.productId, item.size, item.quantity + 1)}
+                        onClick={() => updateQty(String(item.productId), item.size, item.quantity + 1)}
                         className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 text-lg font-bold transition-all"
                       >+</button>
                     </div>
@@ -90,7 +91,7 @@ export default function CartPage() {
                         {formatCurrency((item.discountPrice ?? item.basePrice ?? 0) * item.quantity)}
                       </span>
                       <button
-                        onClick={() => removeItem(item.productId, item.size)}
+                        onClick={() => removeItem(String(item.productId), item.size)}
                         className="text-gray-600 hover:text-red-400 transition-colors"
                       >
                         <RiDeleteBin2Line className="w-4 h-4" />
@@ -108,7 +109,7 @@ export default function CartPage() {
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-gray-400">
-                <span>Subtotal ({totalItems} items)</span>
+                <span>Subtotal ({cartItemCount} items)</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex justify-between text-gray-400">

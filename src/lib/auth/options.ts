@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs'
 import { connectDB } from '@/lib/db/connect'
 import UserModel from '@/models/User'
 import { authConfig } from '@/config'
-import type { UserRole } from '@/types'
+import type { IUser, UserRole } from '@/types'
 
 declare module 'next-auth' {
   interface Session {
@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
             isActive: true,
           })
           .select('+passwordHash')
-          .lean()
+          .lean<IUser>()
 
         if (!user) return null
 
