@@ -43,7 +43,7 @@
     "next": "^16.1.6",
     "next-auth": "^4.24.7",
     "next-cloudinary": "^6.10.0",
-    "nodemailer": "^8.0.1",
+    "nodemailer": "^7.0.13",
     "postcss": "^8.4.40",
     "qs": "^6.13.0",
     "react": "^18.3.1",
