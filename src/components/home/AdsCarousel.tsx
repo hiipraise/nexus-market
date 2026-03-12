@@ -1,3 +1,4 @@
+// src/components/home/AdsCarousel.tsx
 'use client'
 
 import Image from 'next/image'
