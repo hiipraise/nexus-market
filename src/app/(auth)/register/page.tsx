@@ -1,3 +1,4 @@
+// src/app/(auth)/register/page.tsx
 'use client'
 
 import { useState } from 'react'
@@ -16,7 +17,9 @@ const RegisterSchema = z.object({
   username:       z.string().min(3, 'Min 3 chars').max(30).regex(/^[a-z0-9_]+$/i, 'Letters, numbers, underscores only'),
   email:          z.string().email('Enter a valid email'),
   password:       z.string().min(8, 'Min 8 characters'),
-  secretQuestion: z.enum(secretQuestions as [string, ...string[]], { required_error: 'Choose a question' }),
+  secretQuestion: z.enum(secretQuestions as unknown as [string, ...string[]], {
+  required_error: 'Choose a question'
+}),
   secretAnswer:   z.string().min(1, 'Answer is required'),
 })
 type RegisterForm = z.infer<typeof RegisterSchema>
