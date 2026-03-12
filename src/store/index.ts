@@ -15,6 +15,7 @@ interface CartState {
   removeItem:  (productId: string, size: string) => void
   updateQty:   (productId: string, size: string, qty: number) => void
   clear:       () => void
+  clearCart:   () => void
   openCart:    () => void
   closeCart:   () => void
   setLoading:  (v: boolean) => void
@@ -51,6 +52,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     ),
   })),
   clear:      ()  => set({ items: [] }),
+  clearCart:  ()  => set({ items: [] }),
   openCart:   ()  => set({ isOpen: true }),
   closeCart:  ()  => set({ isOpen: false }),
   setLoading: (v) => set({ isLoading: v }),
