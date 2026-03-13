@@ -4,11 +4,17 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { LoadingSpinner, StarRating } from '@/components/shared'
 
 const RANGES = ['7d', '30d', '90d', '1y'] as const
 type Range = typeof RANGES[number]
+
+const currencyTooltipFormatter = (value: ValueType | undefined, _name: NameType | undefined): [string, string] => {
+  const numericValue = typeof value === 'number' ? value : Number(value ?? 0)
+  return [formatCurrency(numericValue), 'Revenue']
+}
 
 export default function VendorAnalyticsPage() {
   const [range, setRange] = useState<Range>('30d')
@@ -74,7 +80,7 @@ export default function VendorAnalyticsPage() {
                 <CartesianGrid stroke="rgba(255,255,255,0.05)" />
                 <XAxis dataKey="date" hide tick={{ fill: '#6b7280', fontSize: 10 }} />
                 <YAxis hide tick={{ fill: '#6b7280', fontSize: 10 }} />
-                <Tooltip {...tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Revenue']} />
+                <Tooltip {...tooltipStyle} formatter={currencyTooltipFormatter} />
                 <Line type="monotone" dataKey="revenue" stroke="#c88b00" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -91,7 +97,7 @@ export default function VendorAnalyticsPage() {
               <BarChart data={productRevenue.slice(0, 6)} layout="vertical">
                 <XAxis type="number" hide />
                 <YAxis dataKey="name" type="category" width={80} tick={{ fill: '#9ca3af', fontSize: 10 }} />
-                <Tooltip {...tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Revenue']} />
+                <Tooltip {...tooltipStyle} formatter={currencyTooltipFormatter} />
                 <Bar dataKey="revenue" fill="#7a5498" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>

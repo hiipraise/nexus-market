@@ -4,6 +4,7 @@ import { Product } from '@/models'
 import { requireAuth } from '@/lib/auth/helpers'
 import { z } from 'zod'
 import { calculateDiscountedPrice, createUniqueSlug } from '@/lib/utils'
+import type { LeanVendor } from '@/types/lean'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -21,7 +22,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     })
       .populate('vendorId', 'businessName badge profilePic phone whatsapp ratings')
       .populate('categories', 'name slug')
-      .lean()
+      .lean<{ _id: string } | null>()
 
     if (!product) {
       return NextResponse.json(
@@ -91,7 +92,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     if (session!.user.role === 'vendor') {
       const { Vendor } = await import('@/models')
-      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<LeanVendor | null>()
 
       if (!vendor || String(vendor._id) !== String(product.vendorId)) {
         return NextResponse.json(
@@ -165,7 +166,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
     if (session!.user.role === 'vendor') {
       const { Vendor } = await import('@/models')
-      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<LeanVendor | null>()
 
       if (!vendor || String(vendor._id) !== String(product.vendorId)) {
         return NextResponse.json(

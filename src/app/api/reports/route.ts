@@ -5,6 +5,7 @@ import { Report, Product, Vendor } from '@/models'
 import { requireAuth, canModerate } from '@/lib/auth/helpers'
 import { moderationConfig } from '@/config'
 import { getPaginationMeta, parsePagination } from '@/lib/utils'
+import User from '@/models/User'
 
 const CreateReportSchema = z.object({
   entityType: z.enum(['product', 'vendor', 'review']),
@@ -104,10 +105,9 @@ export async function POST(req: NextRequest) {
     } else if (totalReports >= moderationConfig.reviewThreshold) {
       // Flag for review (create notification for admins)
       const { Notification } = await import('@/models')
-      const { User } = await import('@/models/User')
       const admins = await User.find({ role: { $in: ['admin', 'superadmin', 'support'] } }).lean()
       await Notification.insertMany(
-        admins.map(a => ({
+        admins.map((a) => ({
           userId:  a._id,
           type:    'report_update',
           title:   'High Report Count',

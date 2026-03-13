@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { useDebounce } from '@/hooks'
 import { StatusBadge, LoadingSpinner, Pagination, ConfirmDialog } from '@/components/shared'
 import { formatDate } from '@/lib/utils'
-import { RiSearchLine, RiUserForbidLine, RiUserCheckLine } from 'react-icons/ri'
+import { RiSearchLine } from 'react-icons/ri'
 
 export default function AdminUsersPage() {
   const qc = useQueryClient()

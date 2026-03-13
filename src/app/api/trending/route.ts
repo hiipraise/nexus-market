@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/lib/db/connect'
 import { Product, Vendor } from '@/models'
 import { paginationConfig } from '@/config'
+import type { SortOrder } from 'mongoose'
 
 export async function GET(req: NextRequest) {
   try {
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
       most_searched: { status: 'active', isDeleted: false },
     }
 
-    const sortMap: Record<string, Record<string, number>> = {
+    const sortMap: Record<string, Record<string, SortOrder>> = {
       trending:      { purchases: -1, views: -1 },
       most_viewed:   { views: -1 },
       most_bought:   { purchases: -1 },

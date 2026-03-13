@@ -5,6 +5,8 @@ import { Product, Vendor } from '@/models'
 import { requireAuth } from '@/lib/auth/helpers'
 import { createUniqueSlug, parsePagination, getPaginationMeta, calculateDiscountedPrice } from '@/lib/utils'
 import { stockConfig } from '@/config'
+import type { SortOrder } from 'mongoose'
+import type { LeanVendor } from '@/types/lean'
 
 // ── GET /api/products ─────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -32,7 +34,7 @@ export async function GET(req: NextRequest) {
     if (sp.get('tags')) filter['tags'] = { $in: sp.get('tags')!.split(',') }
 
     // Sorting
-    const sortMap: Record<string, Record<string, number>> = {
+    const sortMap: Record<string, Record<string, SortOrder>> = {
       newest:      { createdAt: -1 },
       oldest:      { createdAt:  1 },
       price_asc:   { basePrice:  1 },
@@ -101,7 +103,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB()
 
-    const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+    const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<LeanVendor | null>()
     if (!vendor) {
       return NextResponse.json({ success: false, error: 'Vendor profile not found' }, { status: 404 })
     }
