@@ -79,8 +79,12 @@ export interface CreateRecipientInput {
   currency?:     string
 }
 
-export async function createTransferRecipient(input: CreateRecipientInput) {
-  return paystackFetch('/transferrecipient', {
+export interface CreateRecipientResult {
+  recipient_code: string
+}
+
+export async function createTransferRecipient(input: CreateRecipientInput): Promise<CreateRecipientResult> {
+  return paystackFetch<CreateRecipientResult>('/transferrecipient', {
     method: 'POST',
     body: JSON.stringify({
       type:           'nuban',
@@ -101,8 +105,14 @@ export interface InitiateTransferInput {
   reason?:      string
 }
 
-export async function initiateTransfer(input: InitiateTransferInput) {
-  return paystackFetch('/transfer', {
+export interface InitiateTransferResult {
+  transfer_code: string
+  reference: string
+  status: string
+}
+
+export async function initiateTransfer(input: InitiateTransferInput): Promise<InitiateTransferResult> {
+  return paystackFetch<InitiateTransferResult>('/transfer', {
     method: 'POST',
     body: JSON.stringify({
       source:    'balance',

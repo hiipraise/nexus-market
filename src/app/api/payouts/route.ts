@@ -7,6 +7,7 @@ import { generateReference } from '@/lib/utils'
 import { platformConfig } from '@/config'
 import { createTransferRecipient, initiateTransfer } from '@/lib/paystack'
 import { getPaginationMeta, parsePagination } from '@/lib/utils'
+import type { LeanVendor } from '@/types/lean'
 
 const RequestPayoutSchema = z.object({
   amount:        z.number().positive(),  // in kobo
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest) {
     const filter: Record<string, unknown> = { isDeleted: false }
 
     if (session!.user.role === 'vendor') {
-      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<LeanVendor | null>()
       if (!vendor) return NextResponse.json({ success: false, error: 'Vendor not found' }, { status: 404 })
       filter['vendorId'] = vendor._id
     }
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
     const reference = generateReference()
 
     // Create Paystack transfer recipient
-    const recipient = await createTransferRecipient({ accountName, accountNumber, bankCode }) as any
+    const recipient = await createTransferRecipient({ accountName, accountNumber, bankCode })
 
     // Deduct from vendor balance
     await Vendor.findByIdAndUpdate(vendor._id, { $inc: { balance: -amount } })
