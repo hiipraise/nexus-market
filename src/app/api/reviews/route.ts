@@ -4,6 +4,23 @@ import { connectDB } from '@/lib/db/connect'
 import { Review, Product, Vendor, Order } from '@/models'
 import { requireAuth } from '@/lib/auth/helpers'
 import { getPaginationMeta, parsePagination } from '@/lib/utils'
+import type { LeanOrder, LeanProduct, LeanVendor } from '@/types/lean'
+
+type ReviewUserPreview = {
+  username: string
+  isUsernamePublic: boolean
+  profile?: { avatarUrl?: string }
+}
+
+type LeanReviewWithUser = {
+  userId: ReviewUserPreview
+} & {
+  _id: string
+  rating: number
+  title?: string
+  body: string
+  createdAt: Date
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,13 +41,13 @@ export async function GET(req: NextRequest) {
         .skip(skip)
         .limit(limit)
         .populate('userId', 'username profile.avatarUrl isUsernamePublic')
-        .lean(),
+        .lean<LeanReviewWithUser[]>(),
       Review.countDocuments(filter),
     ])
 
     // Mask private usernames
-    const masked = reviews.map(r => {
-      const u = r.userId as any
+    const masked = reviews.map((r) => {
+      const u = r.userId
       if (u && !u.isUsernamePublic) {
         u.username = u.username.slice(0, 2) + '***'
       }
@@ -70,13 +87,13 @@ export async function POST(req: NextRequest) {
       userId:        session!.user.id,
       orderStatus:   'delivered',
       paymentStatus: 'success',
-    }).lean()
+    }).lean<LeanOrder | null>()
 
     if (!order) {
       return NextResponse.json({ success: false, error: 'You can only review products from delivered orders' }, { status: 403 })
     }
 
-    const product = await Product.findById(parse.data.productId).lean()
+    const product = await Product.findById(parse.data.productId).lean<LeanProduct | null>()
     if (!product) return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 })
 
     const existing = await Review.findOne({ userId: session!.user.id, productId: parse.data.productId, orderId: parse.data.orderId })
@@ -89,15 +106,15 @@ export async function POST(req: NextRequest) {
     })
 
     // Update product and vendor ratings
-    const productReviews = await Review.find({ productId: parse.data.productId, isDeleted: false }).lean()
-    const avg = productReviews.reduce((s, r) => s + r.rating, 0) / productReviews.length
+    const productReviews = await Review.find({ productId: parse.data.productId, isDeleted: false }).lean<Pick<LeanReviewWithUser, 'rating'>[]>()
+    const avg = productReviews.reduce((s: number, r) => s + r.rating, 0) / productReviews.length
     await Product.findByIdAndUpdate(parse.data.productId, {
       'ratings.average': Math.round(avg * 10) / 10,
       'ratings.count':   productReviews.length,
     })
 
-    const vendorReviews = await Review.find({ vendorId: product.vendorId, isDeleted: false }).lean()
-    const vAvg = vendorReviews.reduce((s, r) => s + r.rating, 0) / vendorReviews.length
+    const vendorReviews = await Review.find({ vendorId: product.vendorId, isDeleted: false }).lean<Pick<LeanReviewWithUser, 'rating'>[]>()
+    const vAvg = vendorReviews.reduce((s: number, r) => s + r.rating, 0) / vendorReviews.length
     await Vendor.findByIdAndUpdate(product.vendorId, {
       'ratings.average': Math.round(vAvg * 10) / 10,
       'ratings.count':   vendorReviews.length,

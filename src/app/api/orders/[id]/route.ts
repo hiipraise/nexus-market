@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db/connect'
 import { Order, Notification, Vendor } from '@/models'
 import { requireAuth, getSession } from '@/lib/auth/helpers'
 import { z } from 'zod'
+import type { LeanOrder, LeanVendor } from '@/types/lean'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     const order = await Order.findOne({
       $or: [{ _id: id }, { orderNumber: id }],
       isDeleted: false,
-    }).lean()
+    }).lean<LeanOrder | null>()
 
     if (!order) {
       return NextResponse.json(
@@ -78,10 +79,10 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
 
     if (session!.user.role === 'vendor') {
-      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+      const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<LeanVendor | null>()
 
       const isVendorOrder = order.items.some(
-        (i) => String(i.vendorId) === String(vendor?._id)
+        (i: { vendorId: string }) => String(i.vendorId) === String(vendor?._id)
       )
 
       if (!isVendorOrder) {

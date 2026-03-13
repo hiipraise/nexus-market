@@ -103,6 +103,8 @@ export default function ProductForm({ productId }: Props) {
 
   if (isEdit && loadingExisting) return <LoadingSpinner fullPage />
 
+  const allProductSizes = Object.values(productSizes).flat()
+
   return (
     <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-6 max-w-2xl">
       {/* Images */}
@@ -233,7 +235,7 @@ export default function ProductForm({ productId }: Props) {
             <div key={field.id} className="flex gap-2">
               <select {...register(`variants.${i}.size`)} className="input flex-1 text-sm py-2">
                 <option value="">Select size…</option>
-                {productSizes.map(s => <option key={s} value={s}>{s}</option>)}
+                {allProductSizes.map((s) => <option key={s} value={s}>{s}</option>)}
                 <option value="Free Size">Free Size</option>
                 <option value="One Size">One Size</option>
               </select>

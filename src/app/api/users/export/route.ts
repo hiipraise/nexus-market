@@ -3,6 +3,8 @@ import { connectDB } from '@/lib/db/connect'
 import { Order, Review, Notification } from '@/models'
 import { requireAuth } from '@/lib/auth/helpers'
 import User from '@/models/User'
+import type { LeanOrder } from '@/types/lean'
+import type { IUser } from '@/types'
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,8 +14,8 @@ export async function GET(req: NextRequest) {
     await connectDB()
 
     const [user, orders, reviews, notifications] = await Promise.all([
-      User.findById(session!.user.id).lean(),
-      Order.find({ userId: session!.user.id, isDeleted: false }).lean(),
+      User.findById(session!.user.id).lean<IUser | null>(),
+      Order.find({ userId: session!.user.id, isDeleted: false }).lean<LeanOrder[]>(),
       Review.find({ userId: session!.user.id, isDeleted: false }).lean(),
       Notification.find({ userId: session!.user.id, isDeleted: false }).lean(),
     ])

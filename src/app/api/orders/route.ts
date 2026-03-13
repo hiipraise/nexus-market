@@ -12,6 +12,7 @@ import {
 } from '@/lib/utils'
 import { calculatePlatformFee, initializePayment } from '@/lib/paystack'
 import { appConfig } from '@/config'
+import type { LeanOrderItem, LeanProductWithVendorId, LeanVendor } from '@/types/lean'
 
 const OrderItemSchema = z.object({
   productId: z.string(),
@@ -39,6 +40,8 @@ const CreateOrderSchema = z.object({
   shippingFee:   z.number().default(0),
 })
 
+type CreateOrderInput = z.infer<typeof CreateOrderSchema>
+
 // ── GET /api/orders ────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   try {
@@ -58,7 +61,7 @@ export async function GET(req: NextRequest) {
     if (!isAdmin) {
       if (session.user.role === 'vendor') {
         const { Vendor } = await import('@/models')
-        const vendor = await Vendor.findOne({ userId: session.user.id }).lean()
+        const vendor = await Vendor.findOne({ userId: session.user.id }).lean<LeanVendor | null>()
         if (!vendor) return NextResponse.json({ success: false, error: 'Vendor not found' }, { status: 404 })
         filter['items.vendorId'] = vendor._id
       } else {
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const data = parse.data
+    const data: CreateOrderInput = parse.data
 
     // Guest requires guestInfo
     if (!session && !data.guestInfo) {
@@ -117,7 +120,7 @@ export async function POST(req: NextRequest) {
 
     // Resolve products and build order items
     let subtotal = 0
-    const orderItems = []
+    const orderItems: LeanOrderItem[] = []
 
     for (const item of data.items) {
       const product = await Product.findOne({
@@ -126,7 +129,7 @@ export async function POST(req: NextRequest) {
         isDeleted: false,
       })
         .populate('vendorId', '_id')
-        .lean()
+        .lean<LeanProductWithVendorId | null>()
 
       if (!product) {
         return NextResponse.json(
@@ -135,7 +138,7 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      const variant = product.variants.find(v => v.size === item.size)
+      const variant = product.variants.find((v) => v.size === item.size)
       if (!variant) {
         return NextResponse.json(
           { success: false, error: `Size ${item.size} not available for ${product.name}` },
@@ -156,9 +159,9 @@ export async function POST(req: NextRequest) {
       subtotal += lineTotal
       orderItems.push({
         productId:    product._id,
-        vendorId:     (product.vendorId as any)._id,
+        vendorId:     product.vendorId._id,
         name:         product.name,
-        imageUrl:     product.images.find(i => i.isPrimary)?.url ?? product.images[0]?.url,
+        imageUrl:     product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url ?? '',
         size:         item.size,
         quantity:     item.quantity,
         priceAtOrder: unitPrice,
@@ -167,7 +170,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    const totalPlatformFee = orderItems.reduce((a, i) => a + i.platformFee, 0)
+    const totalPlatformFee = orderItems.reduce((a: number, i: LeanOrderItem) => a + i.platformFee, 0)
     const total            = subtotal + data.shippingFee
 
     const orderNumber = generateOrderNumber()
