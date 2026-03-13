@@ -4,9 +4,6 @@ import { Syne, DM_Sans, DM_Mono } from 'next/font/google'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/options'
 import Providers from '@/components/layout/Providers'
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
-import AnnouncementBar from '@/components/shared/AnnouncementBar'
 import { Toaster } from 'sonner'
 import '@/styles/globals.css'
 import { appConfig } from '@/config'
@@ -86,12 +83,7 @@ export default async function RootLayout({
     >
       <body className="font-body bg-gray-950 text-gray-100 antialiased">
         <Providers session={session}>
-          <AnnouncementBar />
-          <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
+          {children}
           <Toaster
             position="top-right"
             toastOptions={{
