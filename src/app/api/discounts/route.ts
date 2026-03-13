@@ -1,8 +1,14 @@
+// src/api/discounts/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { connectDB } from '@/lib/db/connect'
 import { Discount, Vendor } from '@/models'
 import { requireAuth } from '@/lib/auth/helpers'
+
+type VendorLean = {
+  _id: string
+  status: string
+}
 
 const CreateDiscountSchema = z.object({
   code:      z.string().min(3).max(20).toUpperCase(),
@@ -21,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     await connectDB()
 
-    const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+   const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<VendorLean>()
     if (!vendor) return NextResponse.json({ success: false, error: 'Vendor not found' }, { status: 404 })
 
     const discounts = await Discount.find({ vendorId: vendor._id, isDeleted: false })
@@ -40,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB()
 
-    const vendor = await Vendor.findOne({ userId: session!.user.id }).lean()
+    const vendor = await Vendor.findOne({ userId: session!.user.id }).lean<VendorLean>()
     if (!vendor || vendor.status !== 'verified') {
       return NextResponse.json({ success: false, error: 'Only verified vendors can create discounts' }, { status: 403 })
     }
