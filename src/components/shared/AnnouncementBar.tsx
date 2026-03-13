@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RiCloseLine, RiMegaphoneLine, RiAlertLine, RiCheckLine, RiGiftLine } from 'react-icons/ri'
 import { useQuery } from '@tanstack/react-query'
@@ -15,6 +15,7 @@ const TYPE_STYLES = {
 
 export default function AnnouncementBar() {
   const [dismissed, setDismissed] = useState<string[]>([])
+  const barRef = useRef<HTMLDivElement | null>(null)
 
   const { data: announcements } = useQuery({
     queryKey: ['announcements'],
@@ -23,6 +24,27 @@ export default function AnnouncementBar() {
   })
 
   const visible = (announcements ?? []).filter((a: any) => !dismissed.includes(a._id))
+
+  useEffect(() => {
+    const root = document.documentElement
+
+    if (!visible.length) {
+      root.style.setProperty('--announcement-bar-height', '0px')
+      return
+    }
+
+    const updateHeight = () => {
+      const height = barRef.current?.getBoundingClientRect().height ?? 0
+      root.style.setProperty('--announcement-bar-height', `${Math.ceil(height)}px`)
+    }
+
+    updateHeight()
+    window.addEventListener('resize', updateHeight)
+    return () => {
+      window.removeEventListener('resize', updateHeight)
+      root.style.setProperty('--announcement-bar-height', '0px')
+    }
+  }, [visible.length])
 
   if (!visible.length) return null
 
@@ -33,11 +55,12 @@ export default function AnnouncementBar() {
   return (
     <AnimatePresence>
       <motion.div
+        ref={barRef}
         key={ann._id}
         initial={{ height: 0, opacity: 0 }}
         animate={{ height: 'auto', opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        className={`${style.bg} relative z-40`}
+        className={`${style.bg} fixed top-0 left-0 right-0 z-[60]`}
       >
         <div className="page-container py-2.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
