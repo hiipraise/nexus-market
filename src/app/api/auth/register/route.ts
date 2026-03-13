@@ -1,3 +1,4 @@
+// src/app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { connectDB } from '@/lib/db/connect'
@@ -6,12 +7,12 @@ import { hashPassword, hashAnswer } from '@/lib/utils'
 import { secretQuestions } from '@/config'
 
 const RegisterSchema = z.object({
-  username:       z.string().min(3).max(30).regex(/^[a-z0-9_]+$/i),
-  email:          z.string().email(),
-  password:       z.string().min(8).max(72),
-  secretQuestion: z.enum(secretQuestions as [string, ...string[]]),
-  secretAnswer:   z.string().min(1).max(100),
-  role:           z.enum(['client']).default('client'),
+  username: z.string().min(3).max(30).regex(/^[a-z0-9_]+$/i),
+  email: z.string().email(),
+  password: z.string().min(8).max(72),
+  secretQuestion: z.enum([...secretQuestions] as [string, ...string[]]),
+  secretAnswer: z.string().min(1).max(100),
+  role: z.enum(['client']).default('client'),
 })
 
 export async function POST(req: NextRequest) {
