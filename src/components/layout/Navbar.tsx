@@ -43,8 +43,9 @@ export default function Navbar() {
 
   return (
     <header
+      style={{ top: 'var(--announcement-bar-height, 0px)' }}
       className={`
-        fixed top-0 left-0 right-0 z-50 transition-all duration-300
+        fixed left-0 right-0 z-50 transition-all duration-300
         ${scrolled
           ? 'glass border-b border-[rgba(200,139,0,0.15)] py-3'
           : 'bg-transparent py-5'
