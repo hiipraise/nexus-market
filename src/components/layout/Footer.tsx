@@ -101,14 +101,14 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 font-body">
           <p>© {new Date().getFullYear()} {appConfig.name}. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          {/* <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               All systems operational
             </span>
             <span className="text-gray-700">·</span>
             <span>Payments by Paystack</span>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

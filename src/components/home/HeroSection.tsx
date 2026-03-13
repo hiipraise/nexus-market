@@ -48,10 +48,10 @@ export default function HeroSection() {
                 New vendors weekly
               </span>
               <span className="text-gray-500 text-sm">·</span>
-              <span className="flex items-center gap-1.5 text-gray-400 text-sm">
+              {/* <span className="flex items-center gap-1.5 text-gray-400 text-sm">
                 <RiShieldCheckLine className="w-4 h-4 text-gold-400" />
                 Paystack-secured payments
-              </span>
+              </span> */}
             </motion.div>
 
             {/* Headline */}
@@ -84,7 +84,7 @@ export default function HeroSection() {
             </motion.div>
 
             {/* Stats */}
-            <motion.div
+            {/* <motion.div
               variants={item}
               className="flex flex-wrap gap-8 mt-16"
             >
@@ -99,7 +99,7 @@ export default function HeroSection() {
                   <div className="text-gray-500 text-sm font-body mt-0.5">{stat.label}</div>
                 </div>
               ))}
-            </motion.div>
+            </motion.div> */}
           </motion.div>
         </div>
 
