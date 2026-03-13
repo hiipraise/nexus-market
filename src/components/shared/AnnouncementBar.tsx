@@ -63,11 +63,21 @@ export default function AnnouncementBar() {
         className={`${style.bg} fixed top-0 left-0 right-0 z-[60]`}
       >
         <div className="page-container py-2.5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0 overflow-hidden">
             <Icon className={`w-4 h-4 flex-shrink-0 ${style.text}`} />
-            <p className={`text-sm font-body truncate ${style.text}`}>
-              <span className="font-semibold">{ann.title}:</span>{' '}{ann.content}
-            </p>
+            <div className="flex-1 overflow-hidden">
+              <motion.div
+                className={`flex items-center gap-16 text-sm font-body whitespace-nowrap ${style.text}`}
+                animate={{ x: ['0%', '-50%'] }}
+                transition={{ duration: 16, ease: 'linear', repeat: Infinity }}
+              >
+                {[0, 1].map((index) => (
+                  <span key={`${ann._id}-${index}`} className="inline-flex items-center">
+                    <span className="font-semibold">{ann.title}:</span>&nbsp;{ann.content}
+                  </span>
+                ))}
+              </motion.div>
+            </div>
           </div>
           <button
             onClick={() => setDismissed(d => [...d, ann._id])}
