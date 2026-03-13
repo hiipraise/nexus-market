@@ -93,7 +93,13 @@ export default function DashboardSidebar({ role, username }: Props) {
   }
 
   return (
-    <aside className={`hidden lg:flex flex-col fixed top-16 left-0 h-[calc(100vh-4rem)] z-40 border-r border-[rgba(200,139,0,0.1)] bg-[#0d0520] transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
+    <aside
+      style={{
+        top: 'var(--announcement-bar-height, 0px)',
+        height: 'calc(100vh - var(--announcement-bar-height, 0px))',
+      }}
+      className={`hidden lg:flex flex-col fixed left-0 z-40 border-r border-[rgba(200,139,0,0.1)] bg-[#0d0520] transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}
+    >
       {/* Header */}
       <div className={`flex items-center gap-3 p-4 border-b border-white/5 ${collapsed ? 'justify-center' : ''}`}>
         {!collapsed && (
