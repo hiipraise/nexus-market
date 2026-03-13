@@ -1,6 +1,16 @@
+// src/app/api/discounts/validate/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { connectDB } from '@/lib/db/connect'
 import { Discount } from '@/models'
+
+type DiscountLean = {
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  minOrder?: number
+  maxUses?: number
+  usedCount: number
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +26,7 @@ export async function POST(req: NextRequest) {
       isDeleted: false,
       startsAt:  { $lte: now },
       endsAt:    { $gte: now },
-    }).lean()
+    }).lean<DiscountLean>()
 
     if (!discount) {
       return NextResponse.json({ success: false, error: 'Invalid or expired code' }, { status: 404 })
