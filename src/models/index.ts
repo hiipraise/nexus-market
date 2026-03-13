@@ -1,3 +1,4 @@
+// src/models/index.ts
 import { Schema, model, models } from 'mongoose'
 import type {
   IVendor, ICategory, IProduct, IOrder, ICart,
