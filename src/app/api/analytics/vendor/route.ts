@@ -4,6 +4,19 @@ import { connectDB } from "@/lib/db/connect";
 import { Order, Product, Vendor, Review } from "@/models";
 import { requireAuth } from "@/lib/auth/helpers";
 
+type OrderItemLean = {
+  productId: string;
+  vendorId: string;
+  name: string;
+  quantity: number;
+  vendorAmount: number;
+};
+
+type OrderLean = {
+  createdAt: Date;
+  items: OrderItemLean[];
+};
+
 export async function GET(req: NextRequest) {
   try {
     const { session, error } = await requireAuth(["vendor"]);
@@ -52,7 +65,7 @@ export async function GET(req: NextRequest) {
         createdAt: { $gte: fromDate },
       })
         .sort({ createdAt: -1 })
-        .lean(),
+        .lean<OrderLean[]>(),
 
       Order.countDocuments({
         "items.vendorId": vendor._id,
@@ -67,11 +80,15 @@ export async function GET(req: NextRequest) {
 
     // Revenue by day
     const revenueByDay = recentOrders.reduce(
-      (acc: Record<string, number>, order) => {
+      (acc: Record<string, number>, order: OrderLean) => {
         const day = new Date(order.createdAt).toISOString().split("T")[0];
+
         const revenue = order.items
-          .filter((i) => String(i.vendorId) === String(vendor._id))
-          .reduce((s, i) => s + i.vendorAmount, 0);
+          .filter(
+            (i: OrderItemLean) => String(i.vendorId) === String(vendor._id),
+          )
+          .reduce((s: number, i: OrderItemLean) => s + i.vendorAmount, 0);
+
         acc[day] = (acc[day] ?? 0) + revenue;
         return acc;
       },
@@ -110,11 +127,14 @@ export async function GET(req: NextRequest) {
         period: {
           range,
           revenue: recentOrders.reduce(
-            (s, o) =>
+            (s: number, o: OrderLean) =>
               s +
               o.items
-                .filter((i) => String(i.vendorId) === String(vendor._id))
-                .reduce((a, i) => a + i.vendorAmount, 0),
+                .filter(
+                  (i: OrderItemLean) =>
+                    String(i.vendorId) === String(vendor._id),
+                )
+                .reduce((a: number, i: OrderItemLean) => a + i.vendorAmount, 0),
             0,
           ),
           orders: recentOrders.length,
